@@ -1,0 +1,13 @@
+packages:
+  - "apps/*"
+  - "packages/*"
+  - "tests/*"
+  - "tooling/*"
+
+# pnpm 10 blocks dependency build scripts unless allow-listed (the template's
+# pnpm 12 `allowBuilds: { esbuild: true }`); wrangler's workerd and esbuild
+# (tsup and Storybook bundle with it) need theirs to verify their platform
+# binaries.
+onlyBuiltDependencies:
+  - esbuild
+  - workerd

@@ -1,0 +1,27 @@
+{
+  "name": "turbo-design-system",
+  "private": true,
+  "packageManager": "pnpm@10.12.1",
+  "engines": {
+    "node": ">=22",
+    "pnpm": ">=10"
+  },
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint",
+    "check-types": "turbo run check-types",
+    "test": "turbo run test",
+    "clean": "turbo run clean && rm -rf node_modules",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "changeset": "changeset",
+    "version-packages": "changeset version",
+    "release": "turbo run build --filter=docs^... && changeset publish",
+    "preview-storybook": "turbo run preview-storybook"
+  },
+  "devDependencies": {
+    "@changesets/cli": "3.0.3",
+    "prettier": "3.9.10",
+    "turbo": "2.11.10"
+  }
+}
