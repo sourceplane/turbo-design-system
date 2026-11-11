@@ -5,9 +5,9 @@ template — a React component library, `@acme/ui`, built with tsup and
 TypeScript, documented by Storybook in docs mode, with the shared ESLint and
 TypeScript configurations and Changesets for versioning — on the template's
 Storybook 10, React 19, Vite 8 and TypeScript 7, with its Storybook running
-on **Cloudflare Workers + Static Assets**, deployed by
-[Orun](https://github.com/sourceplane/orun) to stage and prod on every merge.
-Packaging it as an Orun baseline is the next milestone (DE2).
+on **Cloudflare Workers + Static Assets**, and packaged as an **Orun
+baseline**: one command takes a new design system from nothing to live on
+stage and prod, in its own repository, under its own name.
 
 Storybook builds fully static: turbo builds the library first (tsup writes
 its ES module and CommonJS builds, `tsc --emitDeclarationOnly` its
@@ -19,9 +19,56 @@ answers itself, with no redirect — and a missing file a 404. The library, its
 story and the shared configs do not change; the design system's name moves
 into one module, which the Storybook's theme shows as its title, and the
 template, which ships no tests, gains Vitest suites of the component and its
-stories as they behave. See
+stories as they behave. What the baseline adds is everything needed to make a
+copy of it somebody else's — built the way
+[cirrus-baseline](https://github.com/sourceplane/cirrus-baseline) is. See
 [`specs/epics/turbo-design-system`](specs/epics/turbo-design-system/README.md)
 for the design, the milestones and the as-built status.
+
+## Instantiating a monorepo
+
+```bash
+git clone --depth 1 --branch <baseline-tag> https://github.com/sourceplane/turbo-design-system
+cd turbo-design-system
+orun new --blueprint repo-blueprint.yaml --out ~/sites/acme-ui --run-hooks --resume \
+  --set reponame=acme-ui --set productname="Acme UI" \
+  --set githuborg=acme-inc --set subdomain=<workers-dev-subdomain>
+```
+
+Or, once the platform's registry lists it, from the Orun console (Baselines →
+`turbo-design-system` → Build). Two phases — `01-product` (the repository
+created, then the whole design system in one pull request, the Storybook
+deployed to stage and prod and smoke-tested) and `03-docs` (the live
+deployment recorded) — each landing one pull request in the new repository.
+**[BOOTSTRAP.md](BOOTSTRAP.md)** is the operator guide;
+[docs/phases/](docs/phases/README.md) has a page per phase.
+
+The new repository receives the **design system only** — the library, its
+Storybook and their tests, the shared configs, its CI, its tooling, a README
+of its own and its operating contract — renamed throughout to the design
+system's name, repository and Cloudflare Worker. None of this repository's
+machinery ships.
+
+| What makes it a baseline | Where |
+|---|---|
+| The console card (inputs, secrets, programme) | `blueprint.yaml` |
+| The build document (modules, phases, hooks) | `repo-blueprint.yaml` |
+| This tree's identity, and the bootstrap's task contracts | `.baseline/` |
+| The rename engine | `tooling/rebrand/rebrand.mjs` |
+| The bootstrap's helpers (deferrals, redeploy marker, work-tree strip) | `tooling/bootstrap/` |
+| The deployment-record renderer | `hooks/render-deployment-docs.sh` |
+| The design system's README and context pack | `.baseline/product/README.md`, `ai/context/` |
+| The baseline's tests: contract, leak, offline bootstrap, end to end | `testing/`, `.github/workflows/baseline.yml` |
+| Cutting a `baseline-vN` tag | `.github/workflows/tag.yml` |
+
+The framework's name is not the design system's: Storybook's, React's and
+Vite's packages, and the template's own `@acme/ui`, `@repo/eslint-config` and
+`@repo/typescript-config`, never spell this repository's slug, so the rename
+engine has nothing of the framework's to mask. The display name is one
+literal, `SITE_NAME` in `apps/docs/.storybook/site.ts` (`Design System`, the
+template's own name); the placement tier fails on any placed tree that spells
+it anywhere else in the Storybook, or imports a module that is not
+Storybook's, React's, Vite's, the library's or the app's own.
 
 ## What is here (the monorepo)
 
@@ -68,6 +115,8 @@ pnpm --filter docs preview      # wrangler dev over the built Storybook and its 
 | Workflow | What it runs | Ships to a design system |
 |---|---|---|
 | `ci.yml` | the Orun pipeline, and the only workflow a design system carries: `orun plan --changed`, then one job per lane. A pull request runs the verify lanes (the Storybook built and dry-deployed per environment; the tests' `quick-check` lane installs and checks the package, it does not run them), except the bootstrap's own landings (`orun/BASE-*`), where `plan` alone is the check; a merge deploys stage → prod. It plans nothing while `intent.yaml` names the placeholder workspace `ws_CHANGE_ME`, as this repository does. A manual run (Orunbase's Deploy button, or Run workflow on `main`) plans the environment and components it names under the push-to-main trigger, so they deploy as a merge deploys them | yes |
+| `baseline.yml` | the baseline's own tiers: contract tests, the blueprint read by the pinned orun, the leak gate, the offline bootstrap, the Storybook built in a staged job tree, dry-deployed and served | no |
+| `tag.yml` | cuts a `baseline-vN` tag (manual) | no |
 
 ## Credits
 

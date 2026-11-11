@@ -9,7 +9,7 @@ metadata:
 spec:
   title: "Vercel's Design System with Turborepo template on Cloudflare Workers"
   summary: "Vercel's Design System with Turborepo example — the @acme/ui React component library built with tsup and TypeScript, documented by Storybook in docs mode, with shared ESLint and TypeScript configurations and Changesets — on the template's own Storybook 10, React 19, Vite 8 and TypeScript 7, its Storybook built fully static and served as Cloudflare Workers Static Assets behind one small Worker, every file at its own address, with Vitest suites of the component and its stories the template never had, inside the Cirrus baseline's repository conventions, and becomes an Orun baseline that takes a new design system from nothing to live on stage and prod in one landing."
-  state: started
+  state: completed
   milestones:
     - name: "DE0 — the spec"
       exitCriteria:
