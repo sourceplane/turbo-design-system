@@ -1,0 +1,10 @@
+{
+  "extends": "@repo/typescript-config/react-app.json",
+  "compilerOptions": {
+    "types": ["node"],
+    "paths": {
+      "@/*": ["../../apps/docs/*"]
+    }
+  },
+  "include": ["src", "vitest.config.ts"]
+}

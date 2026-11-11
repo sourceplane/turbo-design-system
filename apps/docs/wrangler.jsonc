@@ -1,0 +1,20 @@
+// The Worker and the static Storybook `storybook build --docs` emits
+// (storybook-static). Every file is served at its own address
+// (`html_handling: "none"`): the manager loads its preview from
+// `iframe.html?id=…`, and Storybook keeps each page in the query string, so
+// no address is rewritten or redirected. A request that matches no file
+// reaches the Worker (worker/index.ts): a directory's address is its
+// index.html, and anything else is a 404.
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "turbo-design-system-docs",
+  "main": "./worker/index.ts",
+  "compatibility_date": "2026-10-01",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "assets": {
+    "directory": "./storybook-static",
+    "binding": "ASSETS",
+    "html_handling": "none"
+  },
+  "observability": { "enabled": true }
+}

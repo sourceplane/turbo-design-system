@@ -1,0 +1,39 @@
+{
+  "name": "@acme/ui",
+  "version": "0.0.0",
+  "sideEffects": false,
+  "license": "MIT",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    "./button": {
+      "types": "./dist/button.d.ts",
+      "import": "./dist/button.mjs",
+      "require": "./dist/button.js"
+    }
+  },
+  "scripts": {
+    "build": "tsup && tsc --emitDeclarationOnly",
+    "dev": "tsup --watch --onSuccess 'tsc --emitDeclarationOnly'",
+    "lint": "eslint . --max-warnings 0",
+    "check-types": "tsc --noEmit",
+    "clean": "rm -rf .turbo node_modules dist"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "eslint": "10.14.0",
+    "react": "19.3.1",
+    "tsup": "9.0.0",
+    "typescript": "7.0.2"
+  },
+  "peerDependencies": {
+    "react": "19.3.1"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
