@@ -1,0 +1,23 @@
+apiVersion: orun.io/v1
+kind: TaskContract
+metadata:
+  name: DE-2
+  title: "The design system on Workers"
+spec:
+  goal: Vercel's Design System with Turborepo template runs on its own Storybook 10, React 19, Vite 8 and TypeScript 7 on Cloudflare Workers + Static Assets — the library built by tsup and tsc, the Storybook built static and served as assets behind one Worker, every file at its own address — with its tests, and its README saying how it maps to Vercel
+  affects:
+    - apps/docs
+    - packages/ui
+    - packages/eslint-config
+    - packages/typescript-config
+    - tests/docs
+    - .changeset
+    - .npmrc
+    - pnpm-lock.yaml
+    - pnpm-workspace.yaml
+    - README.md
+    - .gitignore
+  doneWhen:
+    - pnpm check-types, lint, test and build are green
+    - wrangler dev serves the manager, iframe.html at its own address, the stories' index and every bundle, and a missing file as a 404
+  gates: []

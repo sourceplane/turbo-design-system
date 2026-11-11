@@ -1,0 +1,30 @@
+# The epic's declaration. metadata.name equals the directory name; metadata.key
+# is the task-key prefix this epic reserves (DE → DE-1, DE-2, …). Owner, target
+# date and health are the platform's — never written here.
+apiVersion: orun.io/v1
+kind: Epic
+metadata:
+  name: turbo-design-system
+  key: DE
+spec:
+  title: "Vercel's Design System with Turborepo template on Cloudflare Workers"
+  summary: "Vercel's Design System with Turborepo example — the @acme/ui React component library built with tsup and TypeScript, documented by Storybook in docs mode, with shared ESLint and TypeScript configurations and Changesets — on the template's own Storybook 10, React 19, Vite 8 and TypeScript 7, its Storybook built fully static and served as Cloudflare Workers Static Assets behind one small Worker, every file at its own address, with Vitest suites of the component and its stories the template never had, inside the Cirrus baseline's repository conventions, and becomes an Orun baseline that takes a new design system from nothing to live on stage and prod in one landing."
+  state: started
+  milestones:
+    - name: "DE0 — the spec"
+      exitCriteria:
+        - "the repository is born with its intent, CI, tooling and spec index, and this doc set and the task contracts are on main"
+      tasks: [DE-1]
+    - name: "DE1 — the design system on Workers"
+      exitCriteria:
+        - "packages/ui, packages/eslint-config, packages/typescript-config and apps/docs are the upstream template on its own versions, the library built by tsup and tsc, the Storybook by storybook build --docs, with one Worker in front of storybook-static as Workers Static Assets"
+        - "`pnpm check-types`, `pnpm lint`, `pnpm test` (tests/docs: the Button, the stories, the Worker, the built Storybook and library) and `pnpm build` are green"
+        - "`wrangler dev` serves the manager, iframe.html at its own address, the stories' index and every bundle, and a missing file as a 404"
+        - "the README says how to run, test, preview and deploy it, and how every Vercel piece maps to Cloudflare"
+      tasks: [DE-2]
+    - name: "DE2 — a baseline"
+      exitCriteria:
+        - "blueprint.yaml (the console card) and repo-blueprint.yaml (the build) take a new design system from nothing to live on stage and prod in one landing, then record it"
+        - "a design system built from it carries the product only, renamed throughout to its own name, repository and Worker, with the framework's and the template's own names intact"
+        - "Baseline CI is green: contract tests, generated component docs, the blueprint read by the pinned orun, the leak gate, the offline bootstrap and the end-to-end tier"
+      tasks: [DE-3]

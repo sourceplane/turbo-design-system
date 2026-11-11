@@ -1,0 +1,29 @@
+apiVersion: orun.io/v1
+kind: TaskContract
+metadata:
+  name: DE-3
+  title: "turbo-design-system becomes an Orun baseline"
+spec:
+  goal: blueprint.yaml and repo-blueprint.yaml take a new design system from nothing to live on stage and prod in one landing, held by Baseline CI
+  affects:
+    - blueprint.yaml
+    - repo-blueprint.yaml
+    - BOOTSTRAP.md
+    - .baseline
+    - .github/workflows/baseline.yml
+    - .github/workflows/tag.yml
+    - ai/context
+    - docs/phases
+    - hooks
+    - testing
+    - tooling/rebrand
+    - tooling/bootstrap
+    - tooling/catalog
+    - apps/docs/docs
+    - tests/docs/docs
+    - specs/epics/turbo-design-system
+    - README.md
+  doneWhen:
+    - every Baseline CI tier is green
+    - a design system placed from it carries the product only, branded, with the framework's and the template's own names intact
+  gates: []
