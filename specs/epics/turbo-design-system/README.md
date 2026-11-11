@@ -11,7 +11,7 @@ it somebody else's design system in one landing.**
 
 | | |
 |---|---|
-| Status | In progress — DE1 on main: the site runs on Workers |
+| Status | ✅ Shipped (`baseline-v1`) — proven offline in Baseline CI; not yet live (risk DE-A) |
 | Upstream | [vercel/turborepo](https://github.com/vercel/turborepo) `examples/design-system` (MIT), at `c30ba0a` (2026-11-10, "chore: Update design-system example (#14974)"; turborepo head `4e3bdf1`, 2026-11-11) |
 | Reference | [vite-react-boilerplate](https://github.com/sourceplane/vite-react-boilerplate) — the same static Vite build behind one Worker, its tests and its bootstrap; [turborepo-monorepo](https://github.com/sourceplane/turborepo-monorepo) — a template's own Turborepo tree kept whole, an app called `docs` |
 | Key | `DE` |
