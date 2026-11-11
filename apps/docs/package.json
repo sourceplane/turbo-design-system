@@ -1,0 +1,37 @@
+{
+  "name": "docs",
+  "version": "0.0.0",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "storybook dev -p 6006",
+    "build": "storybook build --docs",
+    "preview-storybook": "serve storybook-static",
+    "clean": "rm -rf .turbo node_modules storybook-static",
+    "lint": "eslint . --max-warnings 0",
+    "check-types": "tsc --noEmit",
+    "preview": "wrangler dev"
+  },
+  "dependencies": {
+    "@acme/ui": "workspace:*",
+    "react": "19.3.1",
+    "react-dom": "19.3.1"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "@storybook/addon-docs": "10.6.6",
+    "@storybook/addon-links": "10.6.6",
+    "@storybook/react-vite": "10.6.6",
+    "@types/node": "26.6.6",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@vitejs/plugin-react": "6.2.1",
+    "eslint": "10.14.0",
+    "serve": "14.2.7",
+    "storybook": "10.6.6",
+    "typescript": "7.0.2",
+    "vite": "8.3.6",
+    "wrangler": "4.157.0"
+  }
+}

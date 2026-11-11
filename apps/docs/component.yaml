@@ -1,0 +1,92 @@
+apiVersion: sourceplane.io/v1
+kind: Component
+metadata:
+  name: docs
+  description: The design system's Storybook (Storybook 10 on React 19 and Vite 8, documenting the @acme/ui library, built static in docs mode and served as Cloudflare Workers + Static Assets behind one Worker, per environment)
+spec:
+  type: cloudflare-workers-assets-turbo
+  lifecycle: production
+  owner: platform
+  # Its pages, attached to it in the workspace's catalog: what the Docs
+  # library shows for it, and what the catalog's docs and runbook checks read.
+  # Generated from what this manifest and its sources declare.
+  docs:
+    overview: docs/overview.md
+    pages:
+      - { path: docs/architecture.md, role: architecture, title: Architecture }
+      - { path: docs/runbook.md, role: runbook, title: Runbook }
+  # `app`, not `docs`: a domain and a component share one name space in the
+  # catalog, and a domain named like a component hides that component from it.
+  domain: app
+  path: apps/docs
+  # Its own lane per environment: the Storybook build is the longest job in
+  # the plan, and a shared lane would wait on it.
+  lane: isolated
+  subscribe:
+    environments:
+      - name: dev
+        profile: verify
+      - name: stage
+        profile: verify
+        profileRules:
+          - profile: deploy
+            when:
+              triggerRef: github-push-main
+      - name: prod
+        profile: verify
+        profileRules:
+          - profile: deploy
+            when:
+              triggerRef: github-push-main
+  parameters:
+    nodeVersion: "22"
+    pnpmVersion: "10.12.1"
+
+    workspaceDir: ../..
+    appDir: .
+
+    turboFilter: "docs"
+    # The config the dry run and the deploy hand to wrangler: the Worker
+    # (worker/index.ts) and the static Storybook in storybook-static as its
+    # assets, every file at its own address. The Storybook builds fully
+    # static, so there is no adapter and no generated config — this committed
+    # file is the one wrangler deploys.
+    wranglerConfig: wrangler.jsonc
+
+    # `storybook build --docs` (after turbo builds @acme/ui with tsup and
+    # tsc) writes the manager (index.html), the preview (iframe.html), the
+    # stories' index (index.json), the manager's and the addons' bundles and
+    # the hashed preview bundles under assets/ to storybook-static.
+    # The Worker is a source file wrangler bundles at deploy; the lane checks
+    # it exists after the build like any entry.
+    workerEntrypoint: worker/index.ts
+    assetsDir: storybook-static
+
+    # Per-env worker name: turbo-design-system-docs-{dev,stage,prod}.
+    workerName: turbo-design-system-docs
+    environmentAwareWorkerName: true
+
+    # The account's workers.dev subdomain; exported to the smoke step as
+    # ${WORKERS_DEV_SUBDOMAIN} and used to build ${DEPLOYED_URL}.
+    workersDevSubdomain: your-workers-subdomain
+
+    installCommand: pnpm install --frozen-lockfile
+    # The Storybook writes no absolute URL (it loads everything by relative
+    # address from the origin it was served from), so the build takes no
+    # origin and is the same for every environment.
+    buildCommand: pnpm exec turbo run build --filter=docs
+
+    # Smoke: the home page is Storybook's manager (index.html loading its
+    # runtime), the preview it frames answers at its own address
+    # (iframe.html, no redirect), the stories' index lists the button's docs
+    # page and its story, the preview's bundle names the stories' chunk and
+    # that chunk is the template's Button story ("Hello" — not the design
+    # system's name, which is the owner's to change), and a missing file is a
+    # 404. No request follows a redirect: none is expected. Each response is
+    # buffered before grep so an early match cannot SIGPIPE curl.
+    smokeCommand: "html=$(curl -sf \"${DEPLOYED_URL}/\") && echo \"${html}\" | grep -q './sb-manager/runtime.js' && frame=$(curl -sf \"${DEPLOYED_URL}/iframe.html\") && echo \"${frame}\" | grep -q 'id=\"storybook-root\"' && index=$(curl -sf \"${DEPLOYED_URL}/index.json\") && echo \"${index}\" | grep -q '\"button--docs\"' && echo \"${index}\" | grep -q '\"button--primary\"' && main=$(echo \"${frame}\" | grep -oE 'assets/iframe-[A-Za-z0-9_-]+[.]js' | head -n 1) && test -n \"${main}\" && js=$(curl -sf \"${DEPLOYED_URL}/${main}\") && story=$(echo \"${js}\" | grep -oE 'button[.]stories-[A-Za-z0-9_-]+[.]js' | head -n 1) && test -n \"${story}\" && chunk=$(curl -sf \"${DEPLOYED_URL}/assets/${story}\") && echo \"${chunk}\" | grep -q 'Hello' && test \"$(curl -s -o /dev/null -w '%{http_code}' \"${DEPLOYED_URL}/no-such-file.js\")\" = 404"
+  labels:
+    team: platform
+    layer: delivery
+    surface: web
+    runtime: cloudflare
